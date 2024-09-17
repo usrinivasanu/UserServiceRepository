@@ -26,14 +26,37 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<User> registerUser(@RequestBody @Validated User user) throws RegisterUserFailedException {
-		User registeredUser = userService.registerUser(user);
-		return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+	public ResponseEntity<?> registerUser(@RequestBody @Validated User user) throws RegisterUserFailedException {
+		try {
+			User registeredUser = userService.registerUser(user);
+			return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+		} catch (IllegalArgumentException e) {
+			// Invalid property data
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (Exception e) {
+			// Unexpected error
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+		}
+
 	}
 
 	@GetMapping("/user/{username}")
-	public ResponseEntity<User> getUser(@PathVariable String username) {
-		User user = userService.getUserByUsername(username);
-		return new ResponseEntity<>(user, HttpStatus.CREATED);
+	public ResponseEntity<?> getUser(@PathVariable String username) {
+		try {
+			User user = userService.getUserByUsername(username);
+			if (user != null) {
+				return ResponseEntity.ok(user);
+			} else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body("User with username " + username + " not found.");
+			}
+		} catch (IllegalArgumentException e) {
+			// Invalid ID format or other argument issues
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username provided.");
+		} catch (Exception e) {
+			// General error handling
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+		}
 	}
+
 }

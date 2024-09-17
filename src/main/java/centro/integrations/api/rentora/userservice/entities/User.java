@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,6 +48,10 @@ public class User {
 	@Column(name = "date_of_birth", nullable = false)
 
 	private LocalDate dateOfBirth;
+
+	@Column(name = "user_type", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private UserType usertype;
 
 	@Column(name = "registration_time", nullable = false, updatable = false)
 	private LocalDateTime registrationTime;
