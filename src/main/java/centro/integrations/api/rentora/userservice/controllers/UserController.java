@@ -1,5 +1,7 @@
 package centro.integrations.api.rentora.userservice.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +57,22 @@ public class UserController {
 		} catch (IllegalArgumentException e) {
 			// Invalid ID format or other argument issues
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username provided.");
+		} catch (Exception e) {
+			// General error handling
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+		}
+	}
+
+	@GetMapping("/user/getall")
+	public ResponseEntity<?> getAllUsers() {
+		try {
+			List<User> users = userService.getAllUsers();
+			if (users != null) {
+				return ResponseEntity.ok(users);
+			} else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users present in DB");
+			}
+
 		} catch (Exception e) {
 			// General error handling
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");

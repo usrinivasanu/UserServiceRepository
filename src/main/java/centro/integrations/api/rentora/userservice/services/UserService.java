@@ -1,5 +1,7 @@
 package centro.integrations.api.rentora.userservice.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +31,10 @@ public class UserService {
 
 	public User getUserByUsername(String username) {
 		return userRepository.findByUsername(username);
+	}
+
+	public List<User> getAllUsers() {
+		return userRepository.findAll();
 	}
 
 	public User updateUser(String username, UserUpdateDTO userUpdateDTO) {
