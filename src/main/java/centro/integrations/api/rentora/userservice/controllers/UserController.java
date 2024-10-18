@@ -7,10 +7,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import centro.integrations.api.rentora.userservice.dtos.UserUpdateDTO;
 import centro.integrations.api.rentora.userservice.entities.User;
 import centro.integrations.api.rentora.userservice.exceptions.RegisterUserFailedException;
 import centro.integrations.api.rentora.userservice.services.UserService;
@@ -55,6 +57,23 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username provided.");
 		} catch (Exception e) {
 			// General error handling
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+		}
+	}
+
+	@PutMapping("/user/{username}")
+	public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody UserUpdateDTO userUpdateDTO) {
+		try {
+			User updatedUser = userService.updateUser(username, userUpdateDTO);
+			if (updatedUser != null) {
+				return ResponseEntity.ok(updatedUser);
+			} else {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND)
+						.body("User with username " + username + " not found.");
+			}
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
 		}
 	}
